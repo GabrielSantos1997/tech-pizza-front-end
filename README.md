@@ -3,10 +3,10 @@
 
 Requisitos
 - Node
-- yarn
+- Npm
 
 Instruções para rodar em ambiente local
 ```
-yarn
-yarn run dev
+npm install
+npm run dev
 ```
