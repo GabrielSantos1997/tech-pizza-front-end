@@ -15,6 +15,7 @@ import SearchEngine from 'components/Search/SearchEngine';
 import ModalForm from './ModalForm';
 import { useSelector } from 'react-redux';
 import Sorting from "components/Sorting";
+import moment from 'moment';
 
 const Users = ({ color = 'light' }) => {
   const { role } = useParams();
@@ -37,10 +38,11 @@ const Users = ({ color = 'light' }) => {
     meta,
   } = useGetList({
     page: currentPage,
-    route: `adm/user/${role}/list?&${sortingString}`,
+    route: `user/list`,
     search,
-    sortingString,
   });
+
+  console.log(search)
 
   // DELETE
   const { apiDelete, isLoading: isLoadingDelete } = useDelete({
@@ -54,35 +56,6 @@ const Users = ({ color = 'light' }) => {
   }, [action, sortingString]);
 
   const isLoading = isLoadingList || isLoadingDelete;
-
-  const usersTest = [
-    {
-      'id': 1,
-      'nome': 'Gabriel Santos',
-      'email': 'gabriel@gabriel.com.br',
-      'dataDeCadastro': '10/10/2010',
-    }, {
-      'id': 2,
-      'nome': 'Fabricio',
-      'email': 'fabricio@fabricio.com.br',
-      'dataDeCadastro': '10/10/2010',
-    }, {
-      'id': 3,
-      'nome': 'Alan',
-      'email': 'alan@alan.com.br',
-      'dataDeCadastro': '10/10/2010',
-    }, {
-      'id': 4,
-      'nome': 'Juliana',
-      'email': 'juliana@juliana.com.br',
-      'dataDeCadastro': '10/10/2010',
-    }, {
-      'id': 5,
-      'nome': 'Gabriel Souza',
-      'email': 'gabriels@gabriels.com.br',
-      'dataDeCadastro': '10/10/2010',
-    }
-  ];
 
   return (
     <PageCard
@@ -103,16 +76,9 @@ const Users = ({ color = 'light' }) => {
         <ModalForm
           onSuccess={() => getItems()}
           identifier={selected.identifier}
-          role={role}
         />
       </Modal>
-      <CardTableList title={
-        role === 'admin'
-          ? 'Administradores'
-          : role === 'manager'
-          ? 'Gerentes'
-          : 'Compradores'
-      } color={color}>
+      <CardTableList title={'Administradores'} color={color}>
         <div className="flex flex-wrap float-right mb-4">
           <div className="w-full">
             <button
@@ -196,8 +162,8 @@ const Users = ({ color = 'light' }) => {
             </thead>
 
             <tbody>
-              {usersTest?.map(
-                ({ id, nome, email, dataDeCadastro }) => (
+              {users?.map(
+                ({ id, name, email, createdAt }) => (
                   <tr key={id}>
                     <td className=" text-xs whitespace-nowrap">
                       <span
@@ -205,7 +171,7 @@ const Users = ({ color = 'light' }) => {
                           ? 'text-blueGray-600'
                           : 'text-white')}`}
                       >
-                        {nome}
+                        {name}
                       </span>
                     </td>
                     <td className="text-xs  font-light whitespace-nowrap">
@@ -223,7 +189,7 @@ const Users = ({ color = 'light' }) => {
                           ? 'text-blueGray-600'
                           : 'text-white')}`}
                       >
-                        {dataDeCadastro}
+                        {moment(createdAt).format('L')}
                       </span>
                     </td>
                     <td className="flex py-2 whitespace-nowrap">
@@ -231,7 +197,7 @@ const Users = ({ color = 'light' }) => {
                         type="button"
                         className="mr-2 p-2 rounded bg-lightBlue-500"
                         onClick={() => {
-                          setSelected({ identifier, name });
+                          setSelected({ identifier: id, name });
                           setOpenForm(true);
                         }}
                       >
@@ -244,7 +210,7 @@ const Users = ({ color = 'light' }) => {
                         onClick={() => {
                           apiDelete({
                             name,
-                            route: `/adm/user/${identifier}/remove`,
+                            route: `/user/${id}/delete`,
                           });
                         }}
                       >

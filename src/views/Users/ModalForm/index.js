@@ -15,7 +15,6 @@ function ModalForm({
   closeModal,
   onSuccess = () => {},
   identifier: userIdentifier,
-  role,
 }) {
   const [openTab, setOpenTab] = useState(userIdentifier ? 1 : 0);
   const [minAndMaxPriority, setMinAndMaxPriority] = useState({
@@ -24,7 +23,7 @@ function ModalForm({
   });
 
   const { data: user, getEntity } = useGet({
-    route: `/adm/user/${userIdentifier}/show`,
+    route: `/user/${userIdentifier}/show`,
     isAutomatic: false,
   });
 
@@ -44,7 +43,7 @@ function ModalForm({
   }, []);
 
   const editPassword = ({ password, setSubmitting }) => {
-    const path = `adm/user/${userIdentifier}/change-password`;
+    const path = `user/${userIdentifier}/change-password`;
     api
       .post(path, { password })
       .then(() => {
@@ -52,6 +51,8 @@ function ModalForm({
       })
       .finally(() => {
         setSubmitting(false);
+        onSuccess();
+        closeModal();
       });
   };
   const editParameters = ({
@@ -83,24 +84,16 @@ function ModalForm({
     const { operatorParameters } = values;
     delete values.operatorParameters;
     const path = userIdentifier
-      ? `adm/user/${userIdentifier}/edit`
-      : `adm/user/${role}/new`;
+      ? `user/${userIdentifier}/edit`
+      : `user/new`;
     api
       .post(path, values)
       .then((e) => {
         toast.success(
           `Usuário ${userIdentifier ? 'editado' : 'criado'} com sucesso`
         );
-        if (!userIdentifier && (role === 'operator' || role === 'manager')) {
-          editParameters({
-            operatorParameters,
-            setSubmitting,
-            identifier: e.data.identifier,
-          });
-        } else {
-          onSuccess();
-          closeModal();
-        }
+        onSuccess();
+        closeModal();
       })
       .catch(() => {
         setSubmitting(false);
@@ -155,13 +148,10 @@ function ModalForm({
                 recycledPercentage: recycledPercentage ?? '',
               },
             }}
-            validationSchema={schema(openTab, role === 'admin')}
+            validationSchema={schema(openTab, 'admin')}
             onSubmit={(values, { setSubmitting }) => {
               const aux = getValuesFormatted(values);
 
-              if (role === 'admin') {
-                delete aux.operatorParameters;
-              }
               // edit
               delete aux.confirmPassword;
               if (openTab === 1) {

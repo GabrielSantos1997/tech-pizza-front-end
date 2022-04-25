@@ -14,11 +14,11 @@ function useGetList({ route, page, search, params, isAutomatic = true }) {
 
     api
       .get(route, {
-        params: { page, ...params, ...search },
+        params: { ...search },
       })
       .then((response) => {
-        setData(response.data?.data);
-        setMeta(response.data?.meta);
+        setData(response?.data);
+        // setMeta(response.data?.meta);
       })
       .catch(() => {
         setData([]);
