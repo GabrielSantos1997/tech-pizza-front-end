@@ -1,14 +1,8 @@
 import * as yup from 'yup';
 
-export const schema = () => {
-  const attributesSchema = {
-    valueAsNumber: yup.number()
-   .transform((_, value) => {
-      if (value.includes('.')) {
-        return null;
-      }
-      return +value.replace(/,/, '.');
-    })
-    .positive(),
-  }
-};
+export const schema = yup.object().shape({
+  name: yup.string().required('Campo obrigatório.'),
+  email: yup.string().required('Campo obrigatório.'),
+  phoneNumber: yup.string().required('Campo obrigatório.'),
+  occupation: yup.string().required()
+});

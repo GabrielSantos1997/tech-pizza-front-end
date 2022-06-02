@@ -11,6 +11,8 @@ import { FaEye } from 'react-icons/fa';
 import UploadFile from 'components/Modals/UploadFile';
 import SearchEngine from 'components/Search/SearchEngine';
 import { useSelector } from 'react-redux';
+import useDelete from 'services/hooks/useDelete';
+import moment from 'moment';
 
 const Employee = ({ color = 'light' }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,74 +22,31 @@ const Employee = ({ color = 'light' }) => {
 
   // get LIST
   const {
-    data: metaFields,
+    data: employees,
     getItems,
     isLoading: isLoadingList,
     meta,
   } = useGetList({
     page: currentPage,
-    route: `meta-field/all/list`,
+    route: `employee/list`,
     search,
   });
 
-  const fillModalUpload = {
-    columns: [],
-    uri: '/meta-field/import',
-    title: 'Subir arquivo de importação (.xlsx)',
-  };
+    // DELETE
+  const { apiDelete, isLoading: isLoadingDelete } = useDelete({
+    errorMessage: 'falha ao apagar funcionário, tente novamente mais tarde',
+    successMessage: 'Funcionário removido com sucesso',
+    onSuccess: getItems,
+  });
 
   const isLoading = isLoadingList;
-
-  const employees = [
-    {
-      'id': 1,
-      'codigo': '0001',
-      'nome': 'Gabriel Santos',
-      'email': 'gabriel@gabriel.com.br',
-      'telefone': '11970373426',
-      'cargo': 'Pizzaiolo',
-      'dataDeCadastro': '10/10/2010',
-    }, {
-      'codigo': '0002',
-      'id': 2,
-      'nome': 'Fabricio',
-      'email': 'fabricio@fabricio.com.br',
-      'telefone': '11970373426',
-      'cargo': 'Pizzaiolo',
-      'dataDeCadastro': '10/10/2010',
-    }, {
-      'id': 3,
-      'codigo': '0003',
-      'nome': 'Alan',
-      'email': 'alan@alan.com.br',
-      'telefone': '11970373426',
-      'cargo': 'Pizzaiolo',
-      'dataDeCadastro': '10/10/2010',
-    }, {
-      'id': 4,
-      'codigo': '0004',
-      'nome': 'Juliana',
-      'email': 'juliana@juliana.com.br',
-      'telefone': '11970373426',
-      'cargo': 'Pizzaiolo',
-      'dataDeCadastro': '10/10/2010',
-    }, {
-      'id': 5,
-      'codigo': '0005',
-      'nome': 'Gabriel Souza',
-      'email': 'gabriels@gabriels.com.br',
-      'telefone': '11970373426',
-      'cargo': 'Pizzaiolo',
-      'dataDeCadastro': '10/10/2010',
-    }
-  ];
 
   return (
     <PageCard
       color={color}
       headerContent={
         <>
-          <SearchEngine fields={['search', 'email', 'name', 'codigo', 'cargo']} />
+          <SearchEngine fields={['search', 'email', 'name', 'codigo', 'occupation']} />
         </>
       }
     >
@@ -111,8 +70,8 @@ const Employee = ({ color = 'light' }) => {
               title="Adicionar novo funcionário"
               className="p-2 mr-3 auto rounded bg-black"
               onClick={() => {
-                // setSelected({});
-                // setOpenForm(true);
+                setSelected({});
+                setOpenForm(true);
               }}
             >
               <FiPlus size={15} color="#fff" />
@@ -167,6 +126,15 @@ const Employee = ({ color = 'light' }) => {
                         : 'bg-lightBlue-800 text-lightBlue-300 border-lightBlue-700'
                     }`}
                   >
+                    Ocupação
+                  </th>
+                  <th
+                    className={`align-middle border border-solid text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left ${
+                      color === 'light'
+                        ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
+                        : 'bg-lightBlue-800 text-lightBlue-300 border-lightBlue-700'
+                    }`}
+                  >
                     Data de Cadastro
                   </th>
                   <th
@@ -191,7 +159,7 @@ const Employee = ({ color = 'light' }) => {
                             ? 'text-blueGray-600'
                             : 'text-white')}`}
                         >
-                          {employee?.codigo}
+                          {employee?.id}
                         </span>
                       </td>
                       <td className="text-xs">
@@ -200,7 +168,7 @@ const Employee = ({ color = 'light' }) => {
                             ? 'text-blueGray-600'
                             : 'text-white')}`}
                         >
-                          {employee?.nome}
+                          {employee?.name}
                         </span>
                       </td>
                       <td className="text-xs">
@@ -218,7 +186,7 @@ const Employee = ({ color = 'light' }) => {
                             ? 'text-blueGray-600'
                             : 'text-white')}`}
                         >
-                          {employee?.telefone}
+                          {employee?.phoneNumber}
                         </span>
                       </td>
                       <td className="text-xs">
@@ -227,7 +195,16 @@ const Employee = ({ color = 'light' }) => {
                             ? 'text-blueGray-600'
                             : 'text-white')}`}
                         >
-                          {employee?.dataDeCadastro}
+                          {employee?.occupation}
+                        </span>
+                      </td>
+                      <td className="text-xs">
+                        <span
+                          className={`${+(color === 'light'
+                            ? 'text-blueGray-600'
+                            : 'text-white')}`}
+                        >
+                          {moment(employee.createdAt).format('L')}
                         </span>
                       </td>
                       <td className="text-xs">
@@ -241,6 +218,17 @@ const Employee = ({ color = 'light' }) => {
                         >
                           <FaEye size={15} color="#fff" />
                         </button>
+                        <button
+                            type="button"
+                            className="p-2 rounded bg-red-500"
+                            onClick={() => {
+                              apiDelete({
+                                route: `/employee/${employee.id}/delete`,
+                              });
+                            }}
+                          >
+                            <FiTrash size={15} color="#fff" />
+                          </button>
                       </td>
                     </tr>
                   )
@@ -250,7 +238,7 @@ const Employee = ({ color = 'light' }) => {
           </div>
         </Container>
         {/*<TablePaginator
-          data={metaFields}
+          data={employee}
           emptyMessage="Sem informações para listar"
           isLoading={isLoading}
           meta={meta}

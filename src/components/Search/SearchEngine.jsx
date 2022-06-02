@@ -48,7 +48,7 @@ const SearchEngine = ({ role, fields, meta }) => {
           valueAsText: filter.valueAsText || '',
           valueAsNumber: filter.valueAsNumber || '',
           valueAsDate: filter.valueAsDate || '',
-          cargo: filter.cargo || '',
+          occupation: filter.occupation || '',
           codigo: filter.codigo || '',
         }}
         onSubmit={(values, { setSubmitting }) => {
@@ -140,17 +140,17 @@ const SearchEngine = ({ role, fields, meta }) => {
                   </div>
                 </div>
               )}
-              {fieldsValue?.cargo && (
+              {fieldsValue?.occupation && (
                 <div className="w-full lg:w-6/12 px-4">
                   <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="cargo"
+                      htmlFor="occupation"
                     >
-                      Cargo
+                      occupation
                       <input
-                        name="cargo"
-                        value={values.cargo}
+                        name="occupation"
+                        value={values.occupation}
                         type="text"
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                         onChange={handleChange}

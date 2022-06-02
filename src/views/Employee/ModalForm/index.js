@@ -1,91 +1,73 @@
 import React, { useEffect, useState } from 'react';
-import { Formik } from 'formik';
+import { Formik, ErrorMessage } from 'formik';
 import { toast } from 'react-toastify';
 import { ClipLoader } from 'react-spinners';
+import Select from 'components/Forms/Select';
 
 import useGet from 'services/hooks/useGet';
 import api from 'services/api';
 import { getValuesFormatted } from 'utils/format/formikValues';
+import Attributes from 'components/Forms/UserForm/Attributes';
 import Password from 'components/Forms/UserForm/Password';
 import Tabs from 'components/Tabs';
 import { schema } from './schema';
-import { ErrorMessage } from 'formik';
-import CurrencyInput from "react-currency-input";
 
 function ModalForm({
   closeModal,
   onSuccess = () => {},
-  selected,
+  identifier: userIdentifier,
 }) {
-  const [openTab, setOpenTab] = useState(selected.identifier ? 1 : 0);
-  const [updates, setUpdates] = useState([]);
+  const [openTab, setOpenTab] = useState(userIdentifier ? 1 : 0);
 
-  const { data: metaField, getEntity } = useGet({
-    route: `/meta-field/${selected.identifier}/show`,
+  const { data: employee, getEntity } = useGet({
+    route: `/employee/${userIdentifier}/show`,
     isAutomatic: false,
   });
 
   useEffect(() => {
-    if (selected.identifier) getEntity();
-    getUpdates();
+    if (userIdentifier) getEntity();
   }, []);
 
   const onSubmit = ({ values, setSubmitting }) => {
+    const path = userIdentifier
+      ? `employee/${userIdentifier}/edit`
+      : `employee/new`;
     api
-      .post(`meta-field/${selected.identifier}/edit`, values)
+      .post(path, values)
       .then((e) => {
-        toast.success(`Dado editado com sucesso`);
+        toast.success(
+          `Funcionário ${userIdentifier ? 'editado' : 'criado'} com sucesso`
+        );
         onSuccess();
         closeModal();
       })
       .catch(() => {
         setSubmitting(false);
       })
-      .finally(() => {
-        if (selected.identifier) {
-          setSubmitting(false);
-        }
-      });
-  };
-
-  const getUpdates = () => {
-    api
-      .get(`/meta-field/${selected.modality ? selected.modality.replaceAll('_', '-').toLowerCase() : 'all'}/list-update`)
-      .then((response) => {
-        setUpdates(response.data)
-      })
   };
 
   return (
     <>
-      {(selected.identifier) && (
+      {(!userIdentifier || (userIdentifier && !!employee)) && (
         <>
           <Formik
             enableReinitialize
             initialValues={{
-              valueAsNumber: metaField?.valueAsNumber ?? '',
+              name: employee?.name ?? '',
+              email: employee?.email ?? '',
+              phoneNumber: employee?.phoneNumber ?? '',
+              occupation: employee?.occupation ?? { value: "UNSPECIFIED", label: 'NÃO ESPECIFICADO' },
             }}
-            onSubmit={(values, { setSubmitting, setFieldError }) => {
-              let newValues = {
-                ...values,
-                valueAsText: selected.valueAsText,
-                valueAsNumber: values.valueAsNumber * 100,
-                populaTedBy: values.populaTedBy,
-                modality: selected.modality,
-                oxStage: selected.oxStage,
-              };
+            validationSchema={schema}
+            onSubmit={(values, { setSubmitting }) => {
+              const aux = getValuesFormatted(values);
 
-              if (!values.valueAsNumber) {
-                setSubmitting(false);
-                return setFieldError("valueAsNumber", "Campo obrigatório");
-              }
-
-              const aux = getValuesFormatted(newValues);
               onSubmit({ values: aux, setSubmitting });
             }}
           >
             {({
               values,
+              errors,
               handleChange,
               handleBlur,
               setFieldValue,
@@ -94,75 +76,133 @@ function ModalForm({
               isSubmitting,
             }) => (
               <form
-                style={selected.identifier ? { minHeight: 210, maxWidth: 600 } : {}}
+                style={userIdentifier ? { minHeight: 210, maxWidth: 600 } : {}}
                 className="flex flex-wrap sm:w-full "
                 autoComplete="off"
                 onSubmit={handleSubmit}
               >
-                <div className="w-full px-4 mt-5">
-                  <div className="relative w-full mb-3">
-                    <span className='block uppercase text-blueGray-600 text-xs font-bold mb-2 w-min whitespace-nowrap' htmlFor="valueAsText">
-                      {selected.valueAsText}
-                    </span>
-                    <CurrencyInput
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150 form-control"
+                <div className="flex flex-wrap">
+                  <div className="w-full md:w-1/2 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="name"
+                        data-tip="Escolha o nome do seu spot. (ex: Spot promoção verão 2022)."
+                      >
+                        Nome
+                      </label>
+                      <input
+                        value={values.name}
+                        name="name"
                         type="text"
-                        decimalSeparator=","
-                        thousandSeparator="."
-                        precision="2"
-                        onChange={(maskedvalue, floatvalue, event) => {
-                            handleChange(event);
-                            setFieldValue("valueAsNumber", floatvalue)
-                        }}
+                        maxLength="255"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        onChange={handleChange}
                         onBlur={handleBlur}
-                        allowEmpty={false}
-                        value={values.valueAsNumber}
-                        name="valueAsNumber"
-                    />
-                    <ErrorMessage
-                      component="p"
-                      className="text-red-500 mb-4 font-light text-xs"
-                      name="valueAsNumber"
-                    />
+                      />
+                      <ErrorMessage
+                        component="p"
+                        className="text-red-500 mb-4 font-light text-xs"
+                        name="name"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="w-full px-4 mt-5">
-                  <div className="relative w-full mb-3">
-                    <span className='block uppercase text-blueGray-600 text-xs font-bold mb-2 w-min whitespace-nowrap'>
-                      Histórico de alterações
-                    </span>
-                    <table className="items-center w-full bg-transparent border-collapse">
-                        <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Data de Referência</th>
-                        <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Valor</th>
-                        <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Alterado por</th>
-                      <tbody>
-                        {updates.length > 0 && updates?.map((update) => (
-                          <tr>
-                            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{update.date}</td>
-                            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{update.value}</td>
-                            <td className="border-t-0 px-6 align-middle border-l-0 
-                            border-r-0 text-xs whitespace-nowrap p-4">{update.updatedBy}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="w-full md:w-1/2 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="email"
+                        data-tip="Escolha o nome do seu spot. (ex: Spot promoção verão 2022)."
+                      >
+                        Email
+                      </label>
+                      <input
+                        value={values.email}
+                        name="email"
+                        type="text"
+                        maxLength="255"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <ErrorMessage
+                        component="p"
+                        className="text-red-500 mb-4 font-light text-xs"
+                        name="email"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="flex mt-3 justify-center px-4">
-                    <small className="mt-1 ml-1">
-                      Mostrando {updates.length} atualizações
-                    </small>
+                  <div className="w-full md:w-1/2 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="phoneNumber"
+                        data-tip="Escolha o nome do seu spot. (ex: Spot promoção verão 2022)."
+                      >
+                        Telefone
+                      </label>
+                      <input
+                        value={values.phoneNumber}
+                        name="phoneNumber"
+                        type="text"
+                        maxLength="255"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <ErrorMessage
+                        component="p"
+                        className="text-red-500 mb-4 font-light text-xs"
+                        name="phoneNumber"
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full md:w-1/2 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="occupation"
+                        data-tip="Escolha a duração do seu spot (30s, 45s ou 60s). Caso a duração do seu texto (incluindo o tempo de entrada da voz) seja maior do que a duração selecionada, ele será cortado."
+                      >
+                        Ocupação
+                      </label>
+                      <Select
+                        handleBlur={handleBlur}
+                        name="occupation"
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        placeholder=""
+                        setFieldValue={setFieldValue}
+                        value={values.occupation}
+                        isClearable={false}
+                        // onChange={}
+                        options={[
+                          { value: "UNSPECIFIED", label: 'NÃO ESPECIFICADO' },
+                          { value: "PIZZAMAKER", label: 'PIZZAIOLO' },
+                          { value: "CLERK", label: "ATENDENTE" },
+                          { value: "DELIVERYMAN", label: "ENTREGADOR" },
+                          { value: "CLEANING", label: "LIMPEZA" },
+                        ]}
+                      />
+                      {errors.occupation && 
+                        <ErrorMessage
+                          component="p"
+                          className="text-red-500 mb-4 font-light text-xs"
+                          name="occupation"
+                        />
+                      }
+                    </div>
+                  </div>
                 </div>
                 <div className="flex justify-end self-end w-full mt-2">
                   <button
-                    disabled={values?.valueAsNumber * 100 === metaField?.valueAsNumber * 100}
+                    disabled={isSubmitting}
                     className="bg-black text-white text-sm font-bold p-2 rounded shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150"
                     type="submit"
                   >
                     {isSubmitting ? (
                       <ClipLoader color="#fff" />
                     ) : (
-                      <>{'SALVAR'}</>
+                      <>{userIdentifier ? 'EDITAR' : 'ADICIONAR'}</>
                     )}
                   </button>
                 </div>

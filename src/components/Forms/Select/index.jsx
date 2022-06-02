@@ -39,7 +39,7 @@ function Select({
         value={options ? options.filter(o => o.value == value)[0] : ''}
         noOptionsMessage={() => 'não há opções disponíveis'}
         placeholder={placeholder}
-        isClearable
+        isClearable={isClearable}
         styles={customStyles}
         options={options}
         isMulti={isMulti}
