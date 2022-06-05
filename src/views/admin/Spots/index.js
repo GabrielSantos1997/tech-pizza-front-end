@@ -44,8 +44,8 @@ const Spots = ({ color = 'light' }) => {
 
   // DELETE
   const { apiDelete, isLoading: isLoadingDelete } = useDelete({
-    errorMessage: 'falha ao apagar spot, tente novamente mais tarde',
-    successMessage: 'spot removido com sucesso',
+    errorMessage: 'falha ao apagar funcionário, tente novamente mais tarde',
+    successMessage: 'Funcionário removido com sucesso',
     onSuccess: getItems,
   });
 

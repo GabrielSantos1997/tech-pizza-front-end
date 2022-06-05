@@ -45,11 +45,8 @@ const SearchEngine = ({ role, fields, meta }) => {
           name: filter.name || '',
           email: filter.email || '',
           modality: filter.modality || '',
-          valueAsText: filter.valueAsText || '',
-          valueAsNumber: filter.valueAsNumber || '',
-          valueAsDate: filter.valueAsDate || '',
           occupation: filter.occupation || '',
-          codigo: filter.codigo || '',
+          code: filter.code || '',
         }}
         onSubmit={(values, { setSubmitting }) => {
           setTimeout(() => {
@@ -147,163 +144,42 @@ const SearchEngine = ({ role, fields, meta }) => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="occupation"
                     >
-                      occupation
-                      <input
-                        name="occupation"
-                        value={values.occupation}
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                    </label>
-                  </div>
-                </div>
-              )}
-              {fieldsValue?.codigo && (
-                <div className="w-full lg:w-6/12 px-4">
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="codigo"
-                    >
-                      Código
-                      <input
-                        name="codigo"
-                        value={values.codigo}
-                        type="text"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                    </label>
-                  </div>
-                </div>
-              )}
-              {fieldsValue?.valueAsText && (
-                <div className="w-full lg:w-6/12 px-4">
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="valueAsText"
-                    >
-                      Texto
-                      <input
-                        name="valueAsText"
-                        value={values.valueAsText}
-                        type="valueAsText"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                    </label>
-                  </div>
-                </div>
-              )}
-              {fieldsValue?.valueAsNumber && (
-                <div className="w-full lg:w-6/12 px-4">
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="valueAsNumber"
-                    >
-                      Valor do campo
-                      <CurrencyInput
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150 form-control"
-                        type="text"
-                        decimalSeparator=","
-                        thousandSeparator="."
-                        precision="2"
-                        onChange={(maskedvalue, floatvalue, event) => {
-                            handleChange(event);
-                            setFieldValue("valueAsNumber", floatvalue)
-                        }}
-                        onBlur={handleBlur}
-                        allowEmpty={false}
-                        value={values.valueAsNumber}
-                        name="valueAsNumber"
-                      />
-                    </label>
-                  </div>
-                </div>
-              )}
-              {fieldsValue?.modality && (
-                <div className="w-full lg:w-6/12 px-4">
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="modality"
-                    >
-                      Código interno
+                      Ocupação
                       <Select
                         handleBlur={handleBlur}
-                        name="modality"
+                        name="occupation"
                         placeholder=""
                         setFieldValue={setFieldValue}
-                        value={values.modality}
+                        value={values.occupation}
                         options={[
-                          { value: 'GMD_SEQ', label: 'GMD_SEQ' },
-                          { value: 'GMD_INT', label: 'GMD_INT' },
-                          { value: 'GMD_CONF', label: 'GMD_CONF' },
-                          { value: 'DIAS_SEQ', label: 'DIAS_SEQ' },
-                          { value: 'DIAS_INT', label: 'DIAS_INT' },
-                          { value: 'DIAS_CONF', label: 'DIAS_CONF' },
-                          { value: 'CUSTO_FIXO_SEQ', label: 'CUSTO_FIXO_SEQ' },
-                          { value: 'CUSTO_FIXO_INT', label: 'CUSTO_FIXO_INT' },
-                          { value: 'CUSTO_FIXO_CONF', label: 'CUSTO_FIXO_CONF' },
-                          { value: 'CUSTO_DIETA_SEQ', label: 'CUSTO_DIETA_SEQ' },
-                          { value: 'CUSTO_DIETA_INT', label: 'CUSTO_DIETA_INT' },
-                          { value: 'CUSTO_DIETA_CONF', label: 'CUSTO_DIETA_CONF' },
-                          { value: 'AGIO', label: 'AGIO' },
-                          { value: 'REND_CARC', label: 'REND_CARC' },
-                          { value: 'BOI_GF_BMF', label: 'BACAINDX' },
-                          { value: 'TIR', label: 'TIR' },
-                          { value: 'PESO_DE_COMPRA', label: 'PESO_DE_COMPRA' },
-                          { value: 'PESO_DE_COMPRA_QUILO', label: 'PESO_DE_COMPRA_QUILO' },
-                          { value: 'PRECO_BOI_GORDO', label: 'PRECO_BOI_GORDO' },
-                          { value: 'BEZERRO_CEPEA_GO', label: 'BACFGOIC' },
-                          { value: 'BOI_CEPEA_GO', label: 'BACAGOIC' },
-                          { value: 'MILHO_BMF', label: 'BAINCORN' },
-                          { value: 'SOJA_CEPEA_PARANAGUA', label: 'BASMSBPA' },
-                          { value: 'BOI_BEZERRO_CEPEA_GO', label: 'BOI_BEZERRO_CEPEA_GO' },
-                          { value: 'CEPEA_SP_CEPEA_GO', label: 'CEPEA_SP_CEPEA_GO' },
-                          { value: 'BOI_SC_MILHO_BMF_ARROBA', label: 'BACAIND_BAINCORN' },
-                          { value: 'BOI_GORDO_BMF_1', label: 'BOI_GORDO_BMF_1' },
-                          { value: 'BOI_GORDO_BMF_2', label: 'BOI_GORDO_BMF_2' },
-                          { value: 'BOI_BMF_EM_USD_ARROBA', label: 'BOIBMFUSD' },
-                          { value: 'BOI_AUS_EM_USD_ARROBA_1', label: 'EYCI$' },
-                          { value: 'BOI_AUS_EM_USD_ARROBA_2', label: 'BOIAUSUSD2' },
-                          { value: 'AUS_USD', label: 'AUS_USD' },
-                          { value: 'BOI_USD_EM_USD_ARROBA', label: 'BOIAUSUSD' },
-                          { value: 'CWT_BOI_US_EM_USD', label: 'CTCWTUSA' },
-                          { value: 'BOI_US_EM_USD_ARROBA', label: 'CWT' },
-                          { value: 'SOJA_CHICAGO_USD_BUSHEL', label: 'SOJA_CHICAGO_USD_BUSHEL' },
-                          { value: 'SOJA_CHICAGO_USD_TON', label: 'SOJA_CHICAGO_USD_TON' },
-                          { value: 'SOJA_CHICAGO_BRL_TON', label: 'SOJA_CHICAGO_BRL_TON' },
-                          { value: 'SOJA_CHICAGO_BRL_60_KG', label: 'SOJA_CHICAGO_BRL_60_KG' },
-                          { value: 'PREMIO_CEPEA_CBOT', label: 'PREMIO_CEPEA_CBOT' },
+                          { value: "UNSPECIFIED", label: 'NÃO ESPECIFICADO' },
+                          { value: "PIZZAMAKER", label: 'PIZZAIOLO' },
+                          { value: "CLERK", label: "ATENDENTE" },
+                          { value: "DELIVERYMAN", label: "ENTREGADOR" },
+                          { value: "CLEANING", label: "LIMPEZA" },
                         ]}
                       />
                     </label>
                   </div>
                 </div>
               )}
-              {fieldsValue?.valueAsDate && (
+              {fieldsValue?.code && (
                 <div className="w-full lg:w-6/12 px-4">
                   <div className="relative w-full mb-3">
-                    <span
+                    <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="valueAsDate"
+                      htmlFor="code"
                     >
-                      Período
-                      <ConsultationByPeriod
-                        search={period}
-                        setSearch={(e) => {
-                          delete period?.interval;
-                          setPeriod(e);
-                        }}
+                      Código
+                      <input
+                        name="code"
+                        value={values.code}
+                        type="text"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
                       />
-                    </span>
+                    </label>
                   </div>
                 </div>
               )}
@@ -323,11 +199,6 @@ const SearchEngine = ({ role, fields, meta }) => {
                   type="button"
                   onClick={() => {
                     resetForm();
-                    if (fieldsValue?.period) {
-                      dispatch(updateFilter({ interval: 'today' }));
-                    } else {
-                      dispatch(removeFilter());
-                    }
                     setOpenTabTime(1);
                   }}
                 >

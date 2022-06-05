@@ -53,10 +53,10 @@ function ModalForm({
           <Formik
             enableReinitialize
             initialValues={{
-              name: employee?.name ?? '',
-              email: employee?.email ?? '',
-              phoneNumber: employee?.phoneNumber ?? '',
-              occupation: employee?.occupation ?? { value: "UNSPECIFIED", label: 'NÃO ESPECIFICADO' },
+              name: employee?.name || '',
+              email: employee?.email || '',
+              phoneNumber: employee?.phoneNumber || '',
+              occupation: employee?.occupation || { value: "UNSPECIFIED", label: 'NÃO ESPECIFICADO' },
             }}
             validationSchema={schema}
             onSubmit={(values, { setSubmitting }) => {
@@ -169,12 +169,11 @@ function ModalForm({
                       <Select
                         handleBlur={handleBlur}
                         name="occupation"
-                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         placeholder=""
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         setFieldValue={setFieldValue}
                         value={values.occupation}
                         isClearable={false}
-                        // onChange={}
                         options={[
                           { value: "UNSPECIFIED", label: 'NÃO ESPECIFICADO' },
                           { value: "PIZZAMAKER", label: 'PIZZAIOLO' },

@@ -46,7 +46,7 @@ const Employee = ({ color = 'light' }) => {
       color={color}
       headerContent={
         <>
-          <SearchEngine fields={['search', 'email', 'name', 'codigo', 'occupation']} />
+          <SearchEngine fields={['search', 'email', 'name', 'code', 'occupation']} />
         </>
       }
     >
@@ -195,7 +195,7 @@ const Employee = ({ color = 'light' }) => {
                             ? 'text-blueGray-600'
                             : 'text-white')}`}
                         >
-                          {employee?.occupation}
+                          {employee.occupation === "PIZZAMAKER" ? "PIZZAIOLO" : employee.occupation === "CLERK" ? "ATENDENTE" : employee.occupation === "DELIVERYMAN" ? "ENTREGADOR" : employee.occupation === "CLEANING" ? "LIMPEZA" : "NÃO ESPECIFICADO"}
                         </span>
                       </td>
                       <td className="text-xs">
